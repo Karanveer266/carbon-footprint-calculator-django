@@ -13,7 +13,7 @@ A Django web application that calculates and analyzes carbon footprints based on
 
 - Django 4.2+
 - TailwindCSS for styling
-- Gemma 3 LLM API for carbon footprint analysis
+- Gemma 3 LLM API for carbon footprint analysis, or any other llm api key as epr your preference
 - Python-dotenv for environment variable management
 
 ## Setup Instructions
@@ -29,8 +29,8 @@ A Django web application that calculates and analyzes carbon footprints based on
 1. Clone the repository
 
 ```bash
-git clone <repository-url>
-cd carbon_footprint_django
+git clone https://github.com/Karanveer266/carbon-footprint-calculator-django.git
+cd carbon-footprint-calculator-django
 ```
 
 2. Create and activate a virtual environment
@@ -127,7 +127,3 @@ gunicorn carbon_footprint.wsgi:application --env DJANGO_SETTINGS_MODULE=carbon_f
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
