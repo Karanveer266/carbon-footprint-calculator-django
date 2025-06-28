@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Transportation - Carbon Footprint Calculator{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-blue-50 px-6 py-4 border-b border-blue-100">
+            <h1 class="text-2xl font-bold text-blue-800">Step 1: Transportation</h1>
+            <p class="text-blue-600">Tell us about your daily transportation habits</p>
+        </div>
+        
+        <div class="p-6">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="{{ form.primary_mode.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">What was your primary mode of transportation today?</label>
+                        {{ form.primary_mode }}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.distance_km.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How many kilometers did you travel today?</label>
+                        {{ form.distance_km }}
+                    </div>
+                    
+                    <div class="car-fields" id="car-fields">
+                        <label for="{{ form.fuel_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">What type of fuel does your vehicle use?</label>
+                        {{ form.fuel_type }}
+                    </div>
+                    
+                    <div class="car-fields" id="passengers-field">
+                        <label for="{{ form.passengers.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Including yourself, how many people were in the vehicle?</label>
+                        {{ form.passengers }}
+                    </div>
+                    
+                    <div class="public-transport-fields" id="public-transport-fields">
+                        <label for="{{ form.duration_minutes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How many minutes did you spend on public transport?</label>
+                        {{ form.duration_minutes }}
+                    </div>
+                </div>
+                
+                <div class="pt-4 flex justify-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Next: Food & Diet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const transportMode = document.getElementById('{{ form.primary_mode.id_for_label }}');
+        const carFields = document.querySelectorAll('.car-fields');
+        const passengersField = document.getElementById('passengers-field');
+        const publicTransportFields = document.querySelectorAll('.public-transport-fields');
+        
+        function updateFields() {
+            const mode = transportMode.value;
+            
+            // Hide all conditional fields first
+            carFields.forEach(field => field.style.display = 'none');
+            publicTransportFields.forEach(field => field.style.display = 'none');
+            
+            // Show relevant fields based on transport mode
+            if (mode === 'Car' || mode === 'Motorcycle') {
+                carFields.forEach(field => field.style.display = 'block');
+                
+                // Only show passengers field for cars
+                if (mode === 'Car') {
+                    passengersField.style.display = 'block';
+                } else {
+                    passengersField.style.display = 'none';
+                }
+            }
+            
+            if (mode === 'Bus' || mode === 'Train') {
+                publicTransportFields.forEach(field => field.style.display = 'block');
+            }
+        }
+        
+        // Initial update
+        updateFields();
+        
+        // Update on change
+        transportMode.addEventListener('change', updateFields);
+    });
+</script>
+{% endblock %}

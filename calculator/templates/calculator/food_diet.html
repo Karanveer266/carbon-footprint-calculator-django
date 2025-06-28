@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}Food & Diet - Carbon Footprint Calculator{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-green-50 px-6 py-4 border-b border-green-100">
+            <h1 class="text-2xl font-bold text-green-800">Step 2: Food & Diet</h1>
+            <p class="text-green-600">Tell us about your eating habits</p>
+        </div>
+        
+        <div class="p-6">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="space-y-6">
+                    <div>
+                        <label for="{{ form.diet_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How would you describe your diet?</label>
+                        {{ form.diet_type }}
+                    </div>
+                    
+                    <!-- Breakfast Section -->
+                    <div class="border-t pt-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-3">Breakfast</h2>
+                        
+                        <div class="mb-4">
+                            <label class="inline-flex items-center">
+                                {{ form.had_breakfast }}
+                                <span class="ml-2">Did you have breakfast today?</span>
+                            </label>
+                        </div>
+                        
+                        <div id="breakfast-details" class="pl-4 border-l-2 border-green-200 space-y-3">
+                            <div>
+                                <label for="{{ form.breakfast_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Please describe what you ate for breakfast</label>
+                                {{ form.breakfast_description }}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.breakfast_dairy_level.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How much dairy did your breakfast contain? (0 = none, 5 = large amounts)</label>
+                                {{ form.breakfast_dairy_level }}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.breakfast_meat_level.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How much meat/eggs did your breakfast contain? (0 = none, 5 = large amounts)</label>
+                                {{ form.breakfast_meat_level }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Lunch Section -->
+                    <div class="border-t pt-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-3">Lunch</h2>
+                        
+                        <div class="mb-4">
+                            <label class="inline-flex items-center">
+                                {{ form.had_lunch }}
+                                <span class="ml-2">Did you have lunch today?</span>
+                            </label>
+                        </div>
+                        
+                        <div id="lunch-details" class="pl-4 border-l-2 border-green-200 space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Where did you get your lunch?</label>
+                                <div class="space-y-2">
+                                    {{ form.lunch_source }}
+                                </div>
+                            </div>
+                            
+                            <div id="lunch-delivery-section">
+                                <label class="inline-flex items-center">
+                                    {{ form.has_lunch_invoice }}
+                                    <span class="ml-2">Do you have the delivery invoice/receipt?</span>
+                                </label>
+                                <p class="text-sm text-gray-500 mt-1">You'll be able to upload the invoice in a later step.</p>
+                            </div>
+                            
+                            <div id="lunch-description-section">
+                                <label for="{{ form.lunch_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Please describe what you ate for lunch</label>
+                                {{ form.lunch_description }}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.lunch_meat_level.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How much meat did your lunch contain? (0 = none, 5 = large amounts)</label>
+                                {{ form.lunch_meat_level }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Dinner Section -->
+                    <div class="border-t pt-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-3">Dinner</h2>
+                        
+                        <div class="mb-4">
+                            <label class="inline-flex items-center">
+                                {{ form.had_dinner }}
+                                <span class="ml-2">Did you have dinner?</span>
+                            </label>
+                        </div>
+                        
+                        <div id="dinner-details" class="pl-4 border-l-2 border-green-200 space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Where did you get your dinner?</label>
+                                <div class="space-y-2">
+                                    {{ form.dinner_source }}
+                                </div>
+                            </div>
+                            
+                            <div id="dinner-delivery-section">
+                                <label class="inline-flex items-center">
+                                    {{ form.has_dinner_invoice }}
+                                    <span class="ml-2">Do you have the dinner delivery invoice/receipt?</span>
+                                </label>
+                                <p class="text-sm text-gray-500 mt-1">You'll be able to upload the invoice in a later step.</p>
+                            </div>
+                            
+                            <div id="dinner-description-section">
+                                <label for="{{ form.dinner_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Please describe what you ate for dinner</label>
+                                {{ form.dinner_description }}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.dinner_meat_level.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How much meat did your dinner contain? (0 = none, 5 = large amounts)</label>
+                                {{ form.dinner_meat_level }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Other Food Section -->
+                    <div class="border-t pt-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-3">Other Food Consumption</h2>
+                        
+                        <div>
+                            <label for="{{ form.snacks_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Did you have any snacks or beverages today? Please describe</label>
+                            {{ form.snacks_description }}
+                        </div>
+                        
+                        <div class="mt-3">
+                            <label for="{{ form.food_waste_level.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How much food did you throw away today? (0 = none, 5 = significant amount)</label>
+                            {{ form.food_waste_level }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pt-4 flex justify-between">
+                    <a href="{% url 'transportation_step' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Previous</a>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Next: Home Energy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Breakfast toggle
+        const hadBreakfast = document.getElementById('{{ form.had_breakfast.id_for_label }}');
+        const breakfastDetails = document.getElementById('breakfast-details');
+        
+        function toggleBreakfast() {
+            breakfastDetails.style.display = hadBreakfast.checked ? 'block' : 'none';
+        }
+        
+        hadBreakfast.addEventListener('change', toggleBreakfast);
+        toggleBreakfast();
+        
+        // Lunch toggle
+        const hadLunch = document.getElementById('{{ form.had_lunch.id_for_label }}');
+        const lunchDetails = document.getElementById('lunch-details');
+        const lunchSourceInputs = document.querySelectorAll('input[name="{{ form.lunch_source.html_name }}"]');
+        const lunchDeliverySection = document.getElementById('lunch-delivery-section');
+        const lunchDescriptionSection = document.getElementById('lunch-description-section');
+        
+        function toggleLunch() {
+            lunchDetails.style.display = hadLunch.checked ? 'block' : 'none';
+            updateLunchSections();
+        }
+        
+        function updateLunchSections() {
+            let isDelivery = false;
+            lunchSourceInputs.forEach(input => {
+                if (input.checked && input.value === 'Delivery/Takeout') {
+                    isDelivery = true;
+                }
+            });
+            
+            lunchDeliverySection.style.display = isDelivery ? 'block' : 'none';
+        }
+        
+        hadLunch.addEventListener('change', toggleLunch);
+        lunchSourceInputs.forEach(input => {
+            input.addEventListener('change', updateLunchSections);
+        });
+        toggleLunch();
+        
+        // Dinner toggle
+        const hadDinner = document.getElementById('{{ form.had_dinner.id_for_label }}');
+        const dinnerDetails = document.getElementById('dinner-details');
+        const dinnerSourceInputs = document.querySelectorAll('input[name="{{ form.dinner_source.html_name }}"]');
+        const dinnerDeliverySection = document.getElementById('dinner-delivery-section');
+        const dinnerDescriptionSection = document.getElementById('dinner-description-section');
+        
+        function toggleDinner() {
+            dinnerDetails.style.display = hadDinner.checked ? 'block' : 'none';
+            updateDinnerSections();
+        }
+        
+        function updateDinnerSections() {
+            let isDelivery = false;
+            dinnerSourceInputs.forEach(input => {
+                if (input.checked && input.value === 'Delivery/Takeout') {
+                    isDelivery = true;
+                }
+            });
+            
+            dinnerDeliverySection.style.display = isDelivery ? 'block' : 'none';
+        }
+        
+        hadDinner.addEventListener('change', toggleDinner);
+        dinnerSourceInputs.forEach(input => {
+            input.addEventListener('change', updateDinnerSections);
+        });
+        toggleDinner();
+    });
+</script>
+{% endblock %}

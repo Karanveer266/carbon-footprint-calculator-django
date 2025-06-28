@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Carbon Footprint Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Your Carbon Footprint Dashboard</h1>
+        <a href="{% url 'calculator_home' %}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">New Calculation</a>
+    </div>
+
+    {% if footprint_records %}
+        <!-- Chart Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Carbon Footprint History</h2>
+            <div class="h-64">
+                <canvas id="footprintChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Calculations -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800">Recent Calculations</h2>
+            </div>
+            <div class="divide-y divide-gray-200">
+                {% for record in footprint_records|slice:":5" %}
+                    <div class="px-6 py-4 hover:bg-gray-50">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-800">{{ record.date }}</h3>
+                                <p class="text-gray-600">{{ record.total_footprint|floatformat:2 }} kg CO2e</p>
+                            </div>
+                            <a href="{% url 'footprint_detail' record.id %}" class="text-green-600 hover:text-green-800">View Details</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Footprint Breakdown -->
+        {% if footprint_records.0 %}
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">Latest Footprint Breakdown</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-medium text-blue-800 mb-2">Transportation</h3>
+                            <p class="text-2xl font-bold text-blue-600">{{ footprint_records.0.transportation_footprint|floatformat:2 }} kg</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-medium text-green-800 mb-2">Food</h3>
+                            <p class="text-2xl font-bold text-green-600">{{ footprint_records.0.food_footprint|floatformat:2 }} kg</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-medium text-yellow-800 mb-2">Home Energy</h3>
+                            <p class="text-2xl font-bold text-yellow-600">{{ footprint_records.0.home_energy_footprint|floatformat:2 }} kg</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-medium text-purple-800 mb-2">Consumption</h3>
+                            <p class="text-2xl font-bold text-purple-600">{{ footprint_records.0.consumption_footprint|floatformat:2 }} kg</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">No Footprint Records Yet</h2>
+            <p class="text-gray-600 mb-6">Start calculating your carbon footprint to see your environmental impact.</p>
+            <a href="{% url 'calculator_home' %}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Start Now</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if footprint_records %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('footprintChart').getContext('2d');
+        const dates = {{ chart_dates|safe }};
+        const footprints = {{ chart_footprints|safe }};
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Carbon Footprint (kg CO2e)',
+                    data: footprints,
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    borderWidth: 2,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'kg CO2e'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

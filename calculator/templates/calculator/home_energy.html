@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Home Energy - Carbon Footprint Calculator{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-yellow-50 px-6 py-4 border-b border-yellow-100">
+            <h1 class="text-2xl font-bold text-yellow-800">Step 3: Home Energy</h1>
+            <p class="text-yellow-600">Tell us about your household energy and water usage</p>
+        </div>
+        
+        <div class="p-6">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="space-y-6">
+                    <!-- Home Information -->
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-3">Home Information</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="{{ form.home_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">What type of home do you live in?</label>
+                                {{ form.home_type }}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.household_size.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How many people live in your household?</label>
+                                {{ form.household_size }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Electricity -->
+                    <div class="border-t pt-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-3">Electricity</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="{{ form.electricity_sources.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">What are your sources of electricity? (Select all that apply)</label>
+                                <div class="space-y-2">
+                                    {{ form.electricity_sources }}
+                                </div>
+                            </div>
+                            
+                            <div id="electricity-provider-field">
+                                <label for="{{ form.electricity_provider.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Who is your electricity provider? (Optional)</label>
+                                {{ form.electricity_provider }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Heating & Cooling -->
+                    <div class="border-t pt-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-3">Heating & Cooling</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="{{ form.ac_hours.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How many hours did you use air conditioning today?</label>
+                                {{ form.ac_hours }}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.heating_hours.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How many hours did you use heating today?</label>
+                                {{ form.heating_hours }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Water Usage -->
+                    <div class="border-t pt-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-3">Water Usage</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="{{ form.shower_minutes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How many minutes did you shower today?</label>
+                                {{ form.shower_minutes }}
+                            </div>
+                            
+                            <div>
+                                <label class="inline-flex items-center">
+                                    {{ form.did_laundry }}
+                                    <span class="ml-2">Did you do laundry today?</span>
+                                </label>
+                            </div>
+                            
+                            <div id="laundry-details" class="pl-4 border-l-2 border-yellow-200 space-y-3">
+                                <div>
+                                    <label for="{{ form.laundry_loads.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How many loads of laundry?</label>
+                                    {{ form.laundry_loads }}
+                                </div>
+                                
+                                <div>
+                                    <label for="{{ form.laundry_temperature.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">At what temperature?</label>
+                                    {{ form.laundry_temperature }}
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="inline-flex items-center">
+                                    {{ form.used_dishwasher }}
+                                    <span class="ml-2">Did you use a dishwasher today?</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pt-4 flex justify-between">
+                    <a href="{% url 'food_diet_step' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Previous</a>
+                    <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Next: Consumer Goods</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Electricity provider toggle
+        const electricitySources = document.querySelectorAll('input[name="{{ form.electricity_sources.html_name }}"]');
+        const electricityProviderField = document.getElementById('electricity-provider-field');
+        
+        function toggleElectricityProvider() {
+            let showProvider = false;
+            electricitySources.forEach(source => {
+                if (source.checked && source.value === 'Grid electricity') {
+                    showProvider = true;
+                }
+            });
+            
+            electricityProviderField.style.display = showProvider ? 'block' : 'none';
+        }
+        
+        electricitySources.forEach(source => {
+            source.addEventListener('change', toggleElectricityProvider);
+        });
+        toggleElectricityProvider();
+        
+        // Laundry toggle
+        const didLaundry = document.getElementById('{{ form.did_laundry.id_for_label }}');
+        const laundryDetails = document.getElementById('laundry-details');
+        
+        function toggleLaundry() {
+            laundryDetails.style.display = didLaundry.checked ? 'block' : 'none';
+        }
+        
+        didLaundry.addEventListener('change', toggleLaundry);
+        toggleLaundry();
+    });
+</script>
+{% endblock %}

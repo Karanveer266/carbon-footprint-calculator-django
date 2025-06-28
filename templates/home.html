@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Carbon Footprint Calculator - Home{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-green-700 mb-4">Track Your Carbon Footprint</h1>
+        <p class="text-xl text-gray-600">Understand your environmental impact and find ways to reduce it</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-10">
+        <div class="p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Why Calculate Your Carbon Footprint?</h2>
+            <p class="text-gray-600 mb-6">Understanding your carbon footprint is the first step toward making more sustainable choices. Our calculator helps you identify the biggest contributors to your environmental impact.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-green-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold text-green-700 mb-2">Personalized Analysis</h3>
+                    <p class="text-gray-600">Get detailed insights about your daily activities and their environmental impact.</p>
+                </div>
+                <div class="bg-green-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold text-green-700 mb-2">Track Progress</h3>
+                    <p class="text-gray-600">Monitor your carbon footprint over time and see the impact of your lifestyle changes.</p>
+                </div>
+                <div class="bg-green-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold text-green-700 mb-2">Actionable Recommendations</h3>
+                    <p class="text-gray-600">Receive tailored suggestions to reduce your environmental impact.</p>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'calculator_home' %}" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Start Calculating</a>
+                {% else %}
+                    <a href="{% url 'register' %}" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 mr-4">Sign Up</a>
+                    <a href="{% url 'login' %}" class="inline-block bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">How It Works</h2>
+                <ol class="list-decimal list-inside space-y-3 text-gray-600">
+                    <li>Answer questions about your daily activities</li>
+                    <li>Our AI analyzes your responses</li>
+                    <li>Receive a detailed breakdown of your carbon footprint</li>
+                    <li>Get personalized recommendations</li>
+                    <li>Track your progress over time</li>
+                </ol>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">What We Measure</h2>
+                <ul class="list-disc list-inside space-y-3 text-gray-600">
+                    <li>Transportation (car, public transit, air travel)</li>
+                    <li>Food consumption and dietary choices</li>
+                    <li>Home energy usage</li>
+                    <li>Consumer goods and waste management</li>
+                    <li>Water usage and conservation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

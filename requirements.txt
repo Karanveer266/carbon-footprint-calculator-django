@@ -1,0 +1,16 @@
+# Core dependencies
+Django>=4.2.0,<5.0.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Frontend
+django-tailwind>=3.6.0
+django-browser-reload>=1.11.0
+
+# Markdown support
+Markdown>=3.5.0
+pygments>=2.16.0
+
+# Production
+gunicorn>=21.2.0
+whitenoise>=6.5.0
