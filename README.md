@@ -81,40 +81,6 @@ npm install
 python manage.py runserver
 ```
 
-## Deployment
-
-### Production Setup
-
-1. Update the `.env` file with production settings:
-
-```
-DEBUG=False
-SECRET_KEY=your-secure-secret-key
-ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
-
-# Database settings (if using PostgreSQL)
-DB_NAME=your_db_name
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=your_db_host
-DB_PORT=5432
-
-# API Keys
-GEMMA_API_KEY=your-gemma-api-key
-```
-
-2. Collect static files
-
-```bash
-python manage.py collectstatic --settings=carbon_footprint.settings_prod
-```
-
-3. Run with a production server like Gunicorn
-
-```bash
-gunicorn carbon_footprint.wsgi:application --env DJANGO_SETTINGS_MODULE=carbon_footprint.settings_prod
-```
-
 ## Directory Structure
 
 - `accounts/` - User authentication and profile management
