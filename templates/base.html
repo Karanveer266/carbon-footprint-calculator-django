@@ -7,6 +7,18 @@
     {% load static tailwind_tags %}
     {% tailwind_css %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Add border colors to form inputs */
+        .form-input, .form-select, .form-textarea, .form-range {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus, .form-range:focus {
+            border-color: #10b981;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Navigation Bar -->
@@ -50,21 +62,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-6">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <p>&copy; 2023 Carbon Footprint Calculator. All rights reserved.</p>
-                </div>
-                <div class="flex space-x-4">
-                    <a href="#" class="hover:text-green-400">Privacy Policy</a>
-                    <a href="#" class="hover:text-green-400">Terms of Service</a>
-                    <a href="#" class="hover:text-green-400">Contact Us</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- No Footer -->
 
     {% block scripts %}{% endblock %}
 </body>

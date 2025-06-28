@@ -39,6 +39,7 @@ def transportation_step(request):
     # Initialize or get session data
     if 'user_responses' not in request.session:
         request.session['user_responses'] = {}
+        request.session['results_processing'] = False
     
     if request.method == 'POST':
         form = TransportationForm(request.POST)
@@ -98,8 +99,12 @@ def consumer_goods_step(request):
             request.session['user_responses']['consumer_goods'] = form.cleaned_data
             request.session.modified = True
             
-            # Redirect directly to results step
-            return redirect('results_step')
+            # Set processing flag to False initially
+            request.session['results_processing'] = False
+            request.session.modified = True
+            
+            # Redirect to loading page instead of results
+            return redirect('loading_page')
     else:
         # Pre-fill form with session data if available
         initial_data = request.session.get('user_responses', {}).get('consumer_goods', {})
@@ -108,31 +113,70 @@ def consumer_goods_step(request):
     return render(request, 'calculator/consumer_goods.html', {'form': form})
 
 @login_required
-def results_step(request):
-    """Step 5: Results"""
-    if 'final_result' not in request.session:
-        # Calculate the carbon footprint
-        user_responses = request.session.get('user_responses', {})
-        
-        # Get the analysis from Gemma
-        analysis = analyze_with_gemma(user_responses)
-        request.session['final_result'] = analysis
+def loading_page(request):
+    """Loading page while waiting for results"""
+    # If results are already available, redirect to results page
+    if 'final_result' in request.session:
+        return redirect('view_results')
+    
+    # If processing hasn't started yet, set the flag
+    if not request.session.get('results_processing', False):
+        request.session['results_processing'] = True
         request.session.modified = True
-        
-        # Extract numerical values from the analysis
-        footprint_values = extract_footprint_values(analysis)
-        
-        # Save the record to the database
-        FootprintRecord.objects.create(
-            user=request.user,
-            total_footprint=footprint_values['total'],
-            transportation_footprint=footprint_values['transportation'],
-            food_footprint=footprint_values['food'],
-            home_energy_footprint=footprint_values['home_energy'],
-            consumption_footprint=footprint_values['consumption'],
-            detailed_analysis=analysis,
-            raw_responses=user_responses
-        )
+    
+    return render(request, 'calculator/loading.html')
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+@login_required
+def process_results(request):
+    """Process the results in the background"""
+    # This view should be called via AJAX or redirect from the loading page
+    # It should not be accessed directly by the user
+    
+    # Calculate the carbon footprint
+    user_responses = request.session.get('user_responses', {})
+    
+    # Get the analysis from Gemma
+    analysis = analyze_with_gemma(user_responses)
+    request.session['final_result'] = analysis
+    
+    # Extract numerical values from the analysis
+    footprint_values = extract_footprint_values(analysis)
+    
+    # Save the record to the database
+    FootprintRecord.objects.create(
+        user=request.user,
+        total_footprint=footprint_values['total'],
+        transportation_footprint=footprint_values['transportation'],
+        food_footprint=footprint_values['food'],
+        home_energy_footprint=footprint_values['home_energy'],
+        consumption_footprint=footprint_values['consumption'],
+        detailed_analysis=analysis,
+        raw_responses=user_responses
+    )
+    
+    # Set processing flag to False
+    request.session['results_processing'] = False
+    request.session.modified = True
+    
+    return JsonResponse({'status': 'processing_complete'})
+
+@login_required
+def check_results_status(request):
+    """Check if results are ready"""
+    # This view is called via AJAX from the loading page
+    ready = 'final_result' in request.session and not request.session.get('results_processing', False)
+    
+    return JsonResponse({'ready': ready})
+
+@login_required
+def view_results(request):
+    """View the results"""
+    # If results are not available, redirect to the loading page
+    if 'final_result' not in request.session:
+        return redirect('loading_page')
     
     context = {
         'analysis': request.session.get('final_result', ''),

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load form_filters %}
 
 {% block title %}Food & Diet - Carbon Footprint Calculator{% endblock %}
 
@@ -17,7 +18,7 @@
                 <div class="space-y-6">
                     <div>
                         <label for="{{ form.diet_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How would you describe your diet?</label>
-                        {{ form.diet_type }}
+                        {{ form.diet_type|add_class:"form-select w-full" }}
                     </div>
                     
                     <!-- Breakfast Section -->
@@ -26,7 +27,7 @@
                         
                         <div class="mb-4">
                             <label class="inline-flex items-center">
-                                {{ form.had_breakfast }}
+                                {{ form.had_breakfast|add_class:"form-checkbox" }}
                                 <span class="ml-2">Did you have breakfast today?</span>
                             </label>
                         </div>
@@ -34,17 +35,17 @@
                         <div id="breakfast-details" class="pl-4 border-l-2 border-green-200 space-y-3">
                             <div>
                                 <label for="{{ form.breakfast_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Please describe what you ate for breakfast</label>
-                                {{ form.breakfast_description }}
+                                {{ form.breakfast_description|add_class:"form-textarea w-full" }}
                             </div>
                             
                             <div>
                                 <label for="{{ form.breakfast_dairy_level.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How much dairy did your breakfast contain? (0 = none, 5 = large amounts)</label>
-                                {{ form.breakfast_dairy_level }}
+                                {{ form.breakfast_dairy_level|add_class:"form-range w-full" }}
                             </div>
                             
                             <div>
                                 <label for="{{ form.breakfast_meat_level.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">How much meat/eggs did your breakfast contain? (0 = none, 5 = large amounts)</label>
-                                {{ form.breakfast_meat_level }}
+                                {{ form.breakfast_meat_level|add_class:"form-range w-full" }}
                             </div>
                         </div>
                     </div>
@@ -67,14 +68,7 @@
                                     {{ form.lunch_source }}
                                 </div>
                             </div>
-                            
-                            <div id="lunch-delivery-section">
-                                <label class="inline-flex items-center">
-                                    {{ form.has_lunch_invoice }}
-                                    <span class="ml-2">Do you have the delivery invoice/receipt?</span>
-                                </label>
-                                <p class="text-sm text-gray-500 mt-1">You'll be able to upload the invoice in a later step.</p>
-                            </div>
+
                             
                             <div id="lunch-description-section">
                                 <label for="{{ form.lunch_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Please describe what you ate for lunch</label>
@@ -145,7 +139,16 @@
                 
                 <div class="pt-4 flex justify-between">
                     <a href="{% url 'transportation_step' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Previous</a>
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Next: Home Energy</button>
+                    <button type="submit" id="submit-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Next: Home Energy</button>
+                </div>
+                
+                <!-- Loading Overlay -->
+                <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600 mx-auto mb-4"></div>
+                        <p class="text-lg font-semibold text-gray-800">Processing your information...</p>
+                        <p class="text-sm text-gray-600 mt-2">Please wait a moment.</p>
+                    </div>
                 </div>
             </form>
         </div>
@@ -222,6 +225,30 @@
             input.addEventListener('change', updateDinnerSections);
         });
         toggleDinner();
+        
+        // Form submission loading state
+        const form = document.querySelector('form');
+        const submitButton = document.getElementById('submit-button');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        
+        form.addEventListener('submit', function(e) {
+            // Prevent multiple submissions
+            if (submitButton.disabled) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Show loading overlay
+            loadingOverlay.classList.remove('hidden');
+            
+            // Disable submit button
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+            submitButton.textContent = 'Processing...';
+            
+            // Allow form submission
+            return true;
+        });
     });
 </script>
 {% endblock %}
