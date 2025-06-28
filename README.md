@@ -86,7 +86,6 @@ python manage.py runserver
 - `accounts/` - User authentication and profile management
 - `calculator/` - Core carbon footprint calculation functionality
 - `carbon_footprint/` - Project settings and configuration
-- `media/` - User-uploaded files
 - `templates/` - Global templates
 - `theme/` - TailwindCSS configuration
 
