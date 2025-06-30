@@ -83,7 +83,10 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'theme/static'),
+    ]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -101,3 +104,5 @@ LOGOUT_REDIRECT_URL = '/'
 GEMMA_API_KEY = os.getenv('GEMMA_API_KEY', '')
 
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
