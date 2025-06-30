@@ -2,6 +2,8 @@
 
 http://karan266.pythonanywhere.com
 
+NOTE - I have hosted this app on pythonanywhere.com. So, it takes a lot of time to load the site, i will soon add the demo video for this project, be sure to check it out!
+
 # Carbon Footprint Calculator
 
 A Django web application that calculates and analyzes carbon footprints based on user activities and food consumption patterns.
