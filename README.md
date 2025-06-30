@@ -1,3 +1,7 @@
+# Deployment link -
+
+http://karan266.pythonanywhere.com
+
 # Carbon Footprint Calculator
 
 A Django web application that calculates and analyzes carbon footprints based on user activities and food consumption patterns.
