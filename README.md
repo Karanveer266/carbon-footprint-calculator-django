@@ -2,7 +2,11 @@
 
 http://karan266.pythonanywhere.com
 
-NOTE - I have hosted this app on pythonanywhere.com. So, it takes a lot of time to load the site, i will soon add the demo video for this project, be sure to check it out!
+NOTE - I have hosted this app on pythonanywhere.com. So, it takes a lot of time to load different pages.
+
+# DEMO VIDEO 
+
+https://www.dropbox.com/scl/fi/setd1lxfi1nga7aeayhh8/django_cfc_demo.mp4?rlkey=mazqe6qgmwpfqi1v5fqd2m9kz&st=16lbv48r&dl=0
 
 # Carbon Footprint Calculator
 
