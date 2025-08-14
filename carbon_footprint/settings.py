@@ -103,6 +103,4 @@ LOGOUT_REDIRECT_URL = '/'
 # Gemma API Key - loaded from environment variable
 GEMMA_API_KEY = os.getenv('GEMMA_API_KEY', '')
 
-NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

@@ -128,7 +128,6 @@ def loading_page(request):
 
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
 @login_required
 def process_results(request):
     """Process the results in the background"""
@@ -138,38 +137,62 @@ def process_results(request):
     # Calculate the carbon footprint
     user_responses = request.session.get('user_responses', {})
     
-    # Get the analysis from Gemma
-    analysis = analyze_with_gemma(user_responses)
-    request.session['final_result'] = analysis
-    
-    # Extract numerical values from the analysis
-    footprint_values = extract_footprint_values(analysis)
-    
-    # Save the record to the database
-    FootprintRecord.objects.create(
-        user=request.user,
-        total_footprint=footprint_values['total'],
-        transportation_footprint=footprint_values['transportation'],
-        food_footprint=footprint_values['food'],
-        home_energy_footprint=footprint_values['home_energy'],
-        consumption_footprint=footprint_values['consumption'],
-        detailed_analysis=analysis,
-        raw_responses=user_responses
-    )
-    
-    # Set processing flag to False
-    request.session['results_processing'] = False
-    request.session.modified = True
-    
-    return JsonResponse({'status': 'processing_complete'})
+    try:
+        # Get the analysis from Gemma
+        analysis = analyze_with_gemma(user_responses)
+        request.session['final_result'] = analysis
+
+        # Extract numerical values from the analysis
+        footprint_values = extract_footprint_values(analysis)
+
+        # Save the record to the database
+        FootprintRecord.objects.create(
+            user=request.user,
+            total_footprint=footprint_values['total'],
+            transportation_footprint=footprint_values['transportation'],
+            food_footprint=footprint_values['food'],
+            home_energy_footprint=footprint_values['home_energy'],
+            consumption_footprint=footprint_values['consumption'],
+            detailed_analysis=analysis,
+            raw_responses=user_responses
+        )
+
+        request.session['results_error'] = None
+
+        return JsonResponse({'status': 'processing_complete'})
+    except Exception as e:
+        # Log the error
+        print(f"Error during footprint analysis: {e}")
+
+        # Store error info in session
+        request.session['results_error'] = 'An error occurred while analyzing your footprint. Please try again.'
+
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    finally:
+        # Mark processing as finished, regardless of success or failure
+        request.session['results_processing'] = False
+        request.session.modified = True
 
 @login_required
 def check_results_status(request):
-    """Check if results are ready"""
+    """Check if results are ready, or if an error occurred."""
     # This view is called via AJAX from the loading page
-    ready = 'final_result' in request.session and not request.session.get('results_processing', False)
     
-    return JsonResponse({'ready': ready})
+    error_message = request.session.get('results_error', None)
+
+    # If there's an error, report it
+    if error_message:
+        # Clear the error from the session once it's reported
+        del request.session['results_error']
+        return JsonResponse({'status': 'error', 'message': error_message})
+
+    # Check if results are ready
+    is_ready = 'final_result' in request.session and not request.session.get('results_processing', False)
+    if is_ready:
+        return JsonResponse({'status': 'ready'})
+
+    # Otherwise, still processing
+    return JsonResponse({'status': 'processing'})
 
 @login_required
 def view_results(request):
@@ -203,3 +226,4 @@ def footprint_detail(request, record_id):
         return render(request, 'calculator/footprint_detail.html', context)
     except FootprintRecord.DoesNotExist:
         messages.error(request, "Record not found.")
+        return redirect('calculator_home')
