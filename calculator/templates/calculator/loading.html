@@ -36,46 +36,64 @@
 </div>
 
 <script>
+    const statusCheckUrl = '{% url "check_results_status" %}';
+    const resultsUrl = '{% url "view_results" %}';
+    const processUrl = '{% url "process_results" %}';
+    const csrfToken = '{{ csrf_token }}';
+
     // Check for results every 2 seconds
     function checkForResults() {
-        fetch('{% url "check_results_status" %}')
+        fetch(statusCheckUrl)
             .then(response => response.json())
             .then(data => {
-                if (data.ready) {
-                    window.location.href = '{% url "view_results" %}';
+                if (data.status === 'ready') {
+                    window.location.href = resultsUrl;
+                } else if (data.status === 'error') {
+                    // Display error message and stop polling
+                    const container = document.querySelector('.p-6.text-center');
+                    container.innerHTML = `
+                        <h2 class="text-2xl font-bold text-red-600 mb-4">An Error Occurred</h2>
+                        <p class="text-gray-600 mb-6">${data.message || 'Something went wrong.'}</p>
+                        <a href="{% url 'calculator_home' %}" class="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-600">Try Again</a>
+                    `;
                 } else {
+                    // If still processing, check again after a delay
                     setTimeout(checkForResults, 2000);
                 }
             })
             .catch(error => {
                 console.error('Error checking results:', error);
-                setTimeout(checkForResults, 5000); // Retry after 5 seconds if there's an error
+                setTimeout(checkForResults, 5000); // Retry after 5 seconds if there's a network error
             });
     }
 
     // Function to start processing
     function startProcessing() {
-        fetch('{% url "process_results" %}', {
+        fetch(processUrl, {
             method: 'POST',
             headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
+                'X-CSRFToken': csrfToken,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({})
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'processing_complete') {
-                // Start checking for results once processing is complete
-                setTimeout(checkForResults, 1000);
-            } else {
-                console.error('Processing did not complete as expected:', data);
-                setTimeout(startProcessing, 5000); // Retry processing if unexpected response
+        .then(response => {
+            // Check if the response is successful, even if it contains an error status
+            if (!response.ok) {
+                console.error('Processing request failed with status:', response.status);
             }
+            return response.json();
+        })
+        .then(data => {
+            // Start checking for results immediately, regardless of the initial response,
+            // as the backend now handles the state (processing, ready, or error).
+            setTimeout(checkForResults, 1000);
         })
         .catch(error => {
-            console.error('Error during processing:', error);
-            setTimeout(startProcessing, 5000); // Retry processing if error
+            console.error('Error during initial processing call:', error);
+            // Even if the initial call fails, start polling.
+            // The status check might recover or report a server-side error.
+            setTimeout(checkForResults, 5000);
         });
     }
 
